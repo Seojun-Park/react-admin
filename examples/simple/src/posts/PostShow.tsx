@@ -22,7 +22,10 @@ import {
     useShowController,
     useLocaleState,
     useRecordContext,
+    ShowProps,
+    FunctionField,
 } from 'react-admin';
+import { PostRecord } from '../type';
 import PostTitle from './PostTitle';
 
 const CreateRelatedComment = () => {
@@ -36,8 +39,8 @@ const CreateRelatedComment = () => {
     );
 };
 
-const PostShow = () => {
-    const controllerProps = useShowController();
+const PostShow: React.FC<ShowProps> = props => {
+    const controllerProps = useShowController(props);
     const [locale] = useLocaleState();
     return (
         <ShowContextProvider value={controllerProps}>
@@ -52,9 +55,17 @@ const PostShow = () => {
                                 <TextField source="teaser" />
                             )}
                         <ArrayField source="backlinks">
-                            <Datagrid bulkActionButtons={false}>
+                            <Datagrid>
+                                <FunctionField<
+                                    Required<PostRecord>['backlinks'][number]
+                                >
+                                    source="info"
+                                    render={r => {
+                                        console.log(r);
+                                        return `${r.info.email}`;
+                                    }}
+                                />
                                 <DateField source="date" />
-                                <UrlField source="url" />
                             </Datagrid>
                         </ArrayField>
                     </Tab>
