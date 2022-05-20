@@ -1,31 +1,20 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { RichTextInput } from 'ra-input-rich-text';
 import {
-    ArrayInput,
     AutocompleteInput,
-    BooleanInput,
     Create,
-    DateInput,
-    FileField,
-    FileInput,
-    FormDataConsumer,
-    maxValue,
-    minValue,
-    NumberInput,
     required,
     ReferenceInput,
     SaveButton,
-    SelectInput,
     SimpleForm,
-    SimpleFormIterator,
     TextInput,
     Toolbar,
     useNotify,
-    usePermissions,
     useRedirect,
+    AutocompleteInputProps,
 } from 'react-admin';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { UserRecord } from '../type';
 
 const PostCreateToolbar = props => {
     const notify = useNotify();
@@ -83,12 +72,6 @@ const PostCreateToolbar = props => {
     );
 };
 
-const backlinksDefaultValue = [
-    {
-        date: new Date(),
-        url: 'http://google.com',
-    },
-];
 const PostCreate = () => {
     const defaultValues = useMemo(
         () => ({
@@ -96,21 +79,29 @@ const PostCreate = () => {
         }),
         []
     );
-    const { permissions } = usePermissions();
-    const dateDefaultValue = useMemo(() => new Date(), []);
+
+    const autoCompleteOptions: Pick<
+        AutocompleteInputProps,
+        'optionText' | 'inputText' | 'matchSuggestion'
+    > = {
+        optionText: (choice?: UserRecord) => {
+            if (!choice?.id) {
+                return 'non';
+            }
+
+            return <div>{choice.name}</div>;
+        },
+        inputText: (choice: UserRecord) => choice?.name || '',
+        matchSuggestion: (_: string, choice: UserRecord) =>
+            Boolean(choice?.name),
+    };
+
     return (
         <Create redirect="edit">
             <SimpleForm
                 toolbar={<PostCreateToolbar />}
                 defaultValues={defaultValues}
             >
-                <FileInput
-                    source="pdffile"
-                    label="PDF-Template"
-                    accept="application/pdf"
-                >
-                    <FileField source="src" title="title" />
-                </FileInput>
                 <TextInput
                     autoFocus
                     source="title"
@@ -122,71 +113,16 @@ const PostCreate = () => {
                     multiline
                     validate={required('Required field')}
                 />
-                <RichTextInput source="body" fullWidth validate={required()} />
-                <DependantInput dependency="title">
-                    <NumberInput
-                        source="average_note"
-                        validate={[
-                            minValue(0, 'Should be between 0 and 5'),
-                            maxValue(5, 'Should be between 0 and 5'),
-                        ]}
-                    />
-                </DependantInput>
-
-                <DateInput
-                    source="published_at"
-                    defaultValue={dateDefaultValue}
-                />
-                <BooleanInput source="commentable" defaultValue />
-                <ArrayInput
-                    source="backlinks"
-                    defaultValue={backlinksDefaultValue}
-                    validate={[required()]}
+                <ReferenceInput
+                    source="user"
+                    reference="users"
+                    filter={{ show: true }}
                 >
-                    <SimpleFormIterator>
-                        <DateInput source="date" defaultValue="" />
-                        <TextInput source="url" defaultValue="" />
-                    </SimpleFormIterator>
-                </ArrayInput>
-                {permissions === 'admin' && (
-                    <ArrayInput source="authors">
-                        <SimpleFormIterator>
-                            <ReferenceInput source="user_id" reference="users">
-                                <AutocompleteInput label="User" />
-                            </ReferenceInput>
-                            <FormDataConsumer>
-                                {({
-                                    formData,
-                                    scopedFormData,
-                                    getSource,
-                                    ...rest
-                                }) =>
-                                    scopedFormData && scopedFormData.user_id ? (
-                                        <SelectInput
-                                            source={getSource('role')}
-                                            choices={[
-                                                {
-                                                    id: 'headwriter',
-                                                    name: 'Head Writer',
-                                                },
-                                                {
-                                                    id: 'proofreader',
-                                                    name: 'Proof reader',
-                                                },
-                                                {
-                                                    id: 'cowriter',
-                                                    name: 'Co-Writer',
-                                                },
-                                            ]}
-                                            {...rest}
-                                            label="Role"
-                                        />
-                                    ) : null
-                                }
-                            </FormDataConsumer>
-                        </SimpleFormIterator>
-                    </ArrayInput>
-                )}
+                    <AutocompleteInput
+                        {...autoCompleteOptions}
+                        fullWidth={true}
+                    />
+                </ReferenceInput>
             </SimpleForm>
         </Create>
     );
@@ -194,14 +130,14 @@ const PostCreate = () => {
 
 export default PostCreate;
 
-const DependantInput = ({
-    dependency,
-    children,
-}: {
-    dependency: string;
-    children: JSX.Element;
-}) => {
-    const dependencyValue = useWatch({ name: dependency });
+// const DependantInput = ({
+//     dependency,
+//     children,
+// }: {
+//     dependency: string;
+//     children: JSX.Element;
+// }) => {
+//     const dependencyValue = useWatch({ name: dependency });
 
-    return dependencyValue ? children : null;
-};
+//     return dependencyValue ? children : null;
+// };

@@ -10,6 +10,13 @@ type BackLinkProps = Array<{
 }> &
     Record;
 
+export interface UserRecord extends Record {
+    id: number;
+    name?: string;
+    role?: string;
+    show?: boolean;
+}
+
 export interface PostRecord extends Record {
     id: number;
     title: string;
@@ -25,4 +32,5 @@ export interface PostRecord extends Record {
     subcategory: string;
     backlinks?: Array<BackLinkProps>;
     notifications: Array<number>;
+    user?: UserRecord;
 }

@@ -309,16 +309,36 @@ export default {
             id: 1,
             name: 'Logan Schowalter',
             role: 'admin',
+            show: true,
         },
         {
             id: 2,
             name: 'Breanna Gibson',
             role: 'user',
+            show: true,
         },
         {
             id: 3,
             name: 'Annamarie Mayer',
             role: 'user',
+            show: true,
+        },
+        {
+            id: 4,
+            name: 'Foo Bar',
+            role: 'user',
+            show: true,
+        },
+        {
+            id: 5,
+            role: 'user',
+            show: true,
+        },
+        {
+            id: 6,
+            name: 'Mr Unicorn',
+            role: 'user',
+            show: true,
         },
     ],
 };
