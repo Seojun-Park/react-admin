@@ -1,3 +1,10 @@
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from '@mui/material';
 import * as React from 'react';
 import {
     ArrayField,
@@ -22,6 +29,10 @@ import {
     useShowController,
     useLocaleState,
     useRecordContext,
+    TopToolbar,
+    Form,
+    ReferenceInput,
+    SelectInput,
 } from 'react-admin';
 import PostTitle from './PostTitle';
 
@@ -36,12 +47,48 @@ const CreateRelatedComment = () => {
     );
 };
 
+const PostAction = () => {
+    const [opened, setOpened] = React.useState<boolean>();
+
+    const optionLabel = r => {
+        return `${r.name} ${r.id}`;
+    };
+    return (
+        <TopToolbar>
+            <>
+                <Button onClick={() => setOpened(!opened)}>button</Button>
+                <Dialog open={opened}>
+                    <Form>
+                        <DialogTitle>title</DialogTitle>
+                        <DialogContent>
+                            <ReferenceInput source="user_id" reference="users">
+                                <SelectInput
+                                    label="User"
+                                    resettable
+                                    fullWidth
+                                    optionText={optionLabel}
+                                />
+                            </ReferenceInput>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setOpened(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit">Submit</Button>
+                        </DialogActions>
+                    </Form>
+                </Dialog>
+            </>
+        </TopToolbar>
+    );
+};
+
 const PostShow = () => {
     const controllerProps = useShowController();
     const [locale] = useLocaleState();
     return (
         <ShowContextProvider value={controllerProps}>
-            <ShowView title={<PostTitle />}>
+            <ShowView actions={<PostAction />} title={<PostTitle />}>
                 <TabbedShowLayout>
                     <Tab label="post.form.summary">
                         <TextField source="id" />
