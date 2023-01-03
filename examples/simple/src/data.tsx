@@ -265,6 +265,20 @@ export default {
             tags: [3, 5],
             category: 'lifestyle',
             notifications: [],
+            backlinks: [
+                {
+                    date: '2012-08-07T00:00:00.000Z',
+                    url: 'http://example.com/foo/bar.html',
+                },
+                {
+                    date: '2012-08-12T00:00:00.000Z',
+                    url: 'https://blog.johndoe.com/2012/08/12/foobar.html',
+                },
+                {
+                    date: '2012-08-09T00:00:00.000Z',
+                    url: 'http://example.com/bar/baz.html',
+                },
+            ],
         },
     ],
     comments: [

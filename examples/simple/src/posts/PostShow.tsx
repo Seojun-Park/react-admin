@@ -36,9 +36,43 @@ const CreateRelatedComment = () => {
     );
 };
 
+const PostDataGrid = () => {
+    const record = useRecordContext();
+    const [data, setData] = React.useState([]);
+
+    React.useEffect(() => {
+        if (record && record.backlinks) {
+            setData(
+                record.backlinks.map((backlink, i) => ({
+                    index: i + 1,
+                    date: backlink.date,
+                    url: backlink.url,
+                    category: record.category || 'N/A',
+                }))
+            );
+        }
+    }, [record]);
+
+    return (
+        <Datagrid
+            data={data}
+            sort={{
+                field: 'index',
+                order: 'ASC',
+            }}
+        >
+            <TextField source="index" />
+            <TextField source="date" />
+            <TextField source="url" />
+            <TextField source="category" />
+        </Datagrid>
+    );
+};
+
 const PostShow = () => {
     const controllerProps = useShowController();
     const [locale] = useLocaleState();
+
     return (
         <ShowContextProvider value={controllerProps}>
             <ShowView title={<PostTitle />}>
@@ -46,6 +80,7 @@ const PostShow = () => {
                     <Tab label="post.form.summary">
                         <TextField source="id" />
                         <TextField source="title" />
+                        <PostDataGrid />
                         {controllerProps.record &&
                             controllerProps.record.title ===
                                 'Fusce massa lorem, pulvinar a posuere ut, accumsan ac nisi' && (
