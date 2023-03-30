@@ -90,7 +90,7 @@ const PostListActions = () => (
     <TopToolbar>
         <SelectColumnsButton />
         <FilterButton />
-        <CreateButton />
+        {/* <CreateButton /> */}
         <ExportButton />
     </TopToolbar>
 );
@@ -120,60 +120,50 @@ const PostList = () => {
             exporter={exporter}
             actions={<PostListActions />}
         >
-            {isSmall ? (
-                <SimpleList
-                    primaryText={record => record.title}
-                    secondaryText={record => `${record.views} views`}
-                    tertiaryText={record =>
-                        new Date(record.published_at).toLocaleDateString()
-                    }
+            <StyledDatagrid
+                bulkActionButtons={<PostListBulkActions />}
+                rowClick={rowClick}
+                expand={PostPanel}
+                omit={['average_note']}
+            >
+                <TextField source="id" />
+                <TextField source="title" cellClassName="title" />
+                <DateField
+                    source="published_at"
+                    sortByOrder="DESC"
+                    cellClassName="publishedAt"
                 />
-            ) : (
-                <StyledDatagrid
-                    bulkActionButtons={<PostListBulkActions />}
-                    rowClick={rowClick}
-                    expand={PostPanel}
-                    omit={['average_note']}
+                <ReferenceManyCount
+                    label="resources.posts.fields.nb_comments"
+                    reference="comments"
+                    target="post_id"
+                    link
+                />
+                <BooleanField
+                    source="commentable"
+                    label="resources.posts.fields.commentable_short"
+                    sortable={false}
+                />
+                <NumberField source="views" sortByOrder="DESC" />
+                <ReferenceArrayField
+                    label="Tags"
+                    reference="tags"
+                    source="tags"
+                    sortBy="tags.name"
+                    sort={tagSort}
+                    cellClassName="hiddenOnSmallScreens"
+                    headerClassName="hiddenOnSmallScreens"
                 >
-                    <TextField source="id" />
-                    <TextField source="title" cellClassName="title" />
-                    <DateField
-                        source="published_at"
-                        sortByOrder="DESC"
-                        cellClassName="publishedAt"
-                    />
-                    <ReferenceManyCount
-                        label="resources.posts.fields.nb_comments"
-                        reference="comments"
-                        target="post_id"
-                        link
-                    />
-                    <BooleanField
-                        source="commentable"
-                        label="resources.posts.fields.commentable_short"
-                        sortable={false}
-                    />
-                    <NumberField source="views" sortByOrder="DESC" />
-                    <ReferenceArrayField
-                        label="Tags"
-                        reference="tags"
-                        source="tags"
-                        sortBy="tags.name"
-                        sort={tagSort}
-                        cellClassName="hiddenOnSmallScreens"
-                        headerClassName="hiddenOnSmallScreens"
-                    >
-                        <SingleFieldList>
-                            <ChipField source="name.en" size="small" />
-                        </SingleFieldList>
-                    </ReferenceArrayField>
-                    <NumberField source="average_note" />
-                    <PostListActionToolbar>
-                        <EditButton />
-                        <ShowButton />
-                    </PostListActionToolbar>
-                </StyledDatagrid>
-            )}
+                    <SingleFieldList>
+                        <ChipField source="name.en" size="small" />
+                    </SingleFieldList>
+                </ReferenceArrayField>
+                <NumberField source="average_note" />
+                <PostListActionToolbar>
+                    <EditButton />
+                    <ShowButton />
+                </PostListActionToolbar>
+            </StyledDatagrid>
         </List>
     );
 };
